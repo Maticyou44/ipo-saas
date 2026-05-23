@@ -1,19 +1,19 @@
-/* 폰트 임포트 (반드시 맨 위) */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/[email protected]/dist/web/static/pretendard.min.css");
-
 @import "tailwindcss";
 
+/* 폰트: 본문(Pretendard) + 헤드라인(Noto Serif KR) + 숫자(JetBrains Mono) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+
+/* Quiet Authority 디자인 토큰 */
 @theme {
-  /* Foundation — 배경 & 구조 */
+  /* Foundation — 배경/구조 */
   --color-ivory: #FAF7F2;
   --color-sand: #EFE9DE;
   --color-linen: #E5DED1;
 
   /* Ink — 타이포그래피 */
   --color-ink: #1A1F2E;
-  --color-ink-slate: #4A5468;
+  --color-slate: #4A5468;
   --color-mist: #8B92A3;
 
   /* Brand — 정체성 */
@@ -24,24 +24,28 @@
   --color-sage: #5A7A6E;
   --color-clay: #B85742;
 
-  /* 폰트 패밀리 */
-  --font-serif: "Noto Serif KR", "Source Serif Pro", Georgia, serif;
-  --font-sans: "Pretendard", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* 타입 시스템 */
+  --font-serif: "Noto Serif KR", Georgia, serif;
+  --font-sans: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", monospace;
 }
 
-/* 기본 body 스타일 */
+/* 본문 기본값 — Ivory 배경, Deep Ink 텍스트, Pretendard */
 body {
   background-color: var(--color-ivory);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 숫자에 항상 등폭 적용 */
-.font-mono,
-.tabular-nums {
+/* 모노스페이스 폰트에는 항상 tabular-nums 적용 (숫자 정렬용) */
+.font-mono {
   font-variant-numeric: tabular-nums;
+}
+
+/* 한국어 줄바꿈 자연스럽게 */
+:lang(ko) {
+  word-break: keep-all;
+  line-break: strict;
 }
