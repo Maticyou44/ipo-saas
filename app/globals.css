@@ -1,26 +1,47 @@
+/* 폰트 임포트 (반드시 맨 위) */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/[email protected]/dist/web/static/pretendard.min.css");
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Foundation — 배경 & 구조 */
+  --color-ivory: #FAF7F2;
+  --color-sand: #EFE9DE;
+  --color-linen: #E5DED1;
+
+  /* Ink — 타이포그래피 */
+  --color-ink: #1A1F2E;
+  --color-ink-slate: #4A5468;
+  --color-mist: #8B92A3;
+
+  /* Brand — 정체성 */
+  --color-midnight: #0F2A47;
+  --color-amber: #B8893C;
+
+  /* Signal — 의미 표현 */
+  --color-sage: #5A7A6E;
+  --color-clay: #B85742;
+
+  /* 폰트 패밀리 */
+  --font-serif: "Noto Serif KR", "Source Serif Pro", Georgia, serif;
+  --font-sans: "Pretendard", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* 기본 body 스타일 */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 숫자에 항상 등폭 적용 */
+.font-mono,
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

@@ -1,102 +1,103 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      {/* 헤더 */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-6 py-4">
-          <h1 className="text-xl font-bold text-slate-900">IPO 인사이트</h1>
+    <main className="min-h-screen bg-ivory text-ink">
+      <header className="border-b border-linen">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-6">
+          <a href="/" className="font-serif text-xl text-ink">IPO 인사이트</a>
+          <nav className="flex gap-8 text-sm text-ink-slate">
+            <a href="/calendar" className="hover:text-ink">캘린더</a>
+            <a href="/calculator" className="hover:text-ink">계산기</a>
+          </nav>
         </div>
       </header>
 
-      {/* 히어로 섹션 */}
-      <section className="mx-auto max-w-4xl px-6 py-20 text-center">
-        <span className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
-          🚀 곧 출시 예정
-        </span>
-        <h2 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          한국 공모주, <br />
-          더 똑똑하게 청약하세요
-        </h2>
-        <p className="mt-6 text-lg text-slate-600">
-          IPO 일정부터 증권신고서 AI 요약까지, <br />
-          개인투자자를 위한 모든 정보를 한 곳에서
-        </p>
-
-        {/* 이메일 가입 폼 (지금은 디자인만) */}
-        <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <input
-            type="email"
-            placeholder="이메일 주소를 입력하세요"
-            className="w-full max-w-xs rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          />
-          <button className="w-full max-w-xs rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700 sm:w-auto">
-            출시 알림 받기
-          </button>
-        </div>
-        <p className="mt-3 text-xs text-slate-500">
-          스팸은 절대 보내지 않습니다 · 언제든 구독 취소 가능
+      <section className="mx-auto max-w-[1280px] px-6 py-32">
+        <p className="font-mono text-xs uppercase tracking-widest text-mist">Korean IPO Almanac · 2026</p>
+        <h1 className="mt-6 font-serif text-5xl leading-tight tracking-tight text-ink">
+          한국 공모주의 모든 것을, 단정한 시선으로.
+        </h1>
+        <p className="mt-8 max-w-xl text-lg leading-relaxed text-ink-slate">
+          IPO 일정부터 증권신고서 AI 요약까지. 개인투자자를 위한 정확하고 절제된 정보, 한 곳에서.
         </p>
       </section>
 
-      {/* 기능 소개 */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <h3 className="text-center text-2xl font-bold text-slate-900">
-          제공 예정 기능
-        </h3>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-2xl">📅</div>
-            <h4 className="mt-4 font-semibold text-slate-900">
-              IPO 청약 일정 캘린더
-            </h4>
-            <p className="mt-2 text-sm text-slate-600">
-              상장 예정 종목과 청약일을 한눈에. 이메일 알림까지 무료로.
-            </p>
-            <span className="mt-3 inline-block text-xs font-medium text-emerald-600">
-              무료
-            </span>
+      <section className="border-t border-linen">
+        <div className="mx-auto max-w-[1280px] px-6 py-24">
+          <div className="mb-16 flex items-end justify-between border-b border-linen pb-6">
+            <h2 className="font-serif text-3xl text-ink">무료 도구</h2>
+            <span className="font-mono text-xs uppercase tracking-widest text-mist">Tools · Free</span>
           </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-2xl">🧮</div>
-            <h4 className="mt-4 font-semibold text-slate-900">
-              균등배정 청약 계산기
-            </h4>
-            <p className="mt-2 text-sm text-slate-600">
-              예산을 입력하면 증권사별 최적 분산 전략을 계산해드려요.
-            </p>
-            <span className="mt-3 inline-block text-xs font-medium text-emerald-600">
-              무료
-            </span>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-2xl">🤖</div>
-            <h4 className="mt-4 font-semibold text-slate-900">
-              증권신고서 AI 요약
-            </h4>
-            <p className="mt-2 text-sm text-slate-600">
-              수백 페이지 신고서를 AI가 핵심만 요약. 공모가 적정성 분석까지.
-            </p>
-            <span className="mt-3 inline-block text-xs font-medium text-blue-600">
-              월 9,900원
-            </span>
+          <div className="grid gap-8 md:grid-cols-3">
+            <a href="/calendar" className="block border border-linen p-8 transition hover:border-ink-slate">
+              <p className="font-mono text-xs uppercase tracking-widest text-mist">01 · Calendar</p>
+              <h3 className="mt-6 font-serif text-xl text-ink">IPO 청약 일정</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-slate">상장 예정 종목과 청약일을 한눈에. 놓치지 않도록 이메일로 알려드립니다.</p>
+            </a>
+            <a href="/calculator" className="block border border-linen p-8 transition hover:border-ink-slate">
+              <p className="font-mono text-xs uppercase tracking-widest text-mist">02 · Calculator</p>
+              <h3 className="mt-6 font-serif text-xl text-ink">균등배정 계산기</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-slate">예산을 입력하면 증권사별 최적 분산 전략을 안내합니다.</p>
+            </a>
+            <a href="#newsletter" className="block border border-linen p-8 transition hover:border-ink-slate">
+              <p className="font-mono text-xs uppercase tracking-widest text-mist">03 · Alerts</p>
+              <h3 className="mt-6 font-serif text-xl text-ink">이메일 알림</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-slate">관심 종목의 청약 시작과 락업 해제 시점을 정확히 알려드립니다.</p>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* 면책 조항 */}
-      <section className="mx-auto max-w-4xl px-6 py-10">
-        <div className="rounded-xl bg-slate-100 p-6 text-center text-sm text-slate-600">
-          ⚠️ 본 서비스는 정보 제공을 목적으로 하며, 투자 자문이나 권유가 아닙니다.
-          모든 투자 결정과 결과의 책임은 투자자 본인에게 있습니다.
+      <section className="border-t border-linen bg-sand">
+        <div className="mx-auto max-w-[1280px] px-6 py-24">
+          <div className="mb-16 flex items-end justify-between border-b border-linen pb-6">
+            <h2 className="font-serif text-3xl text-ink">심층 분석</h2>
+            <span className="font-mono text-xs uppercase tracking-widest text-mist">Premium · ₩9,900/월</span>
+          </div>
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="border border-linen bg-ivory p-8">
+              <p className="font-mono text-xs uppercase tracking-widest text-mist">AI Brief</p>
+              <h3 className="mt-6 font-serif text-xl text-ink">증권신고서 AI 요약</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-slate">수백 페이지 신고서의 핵심을 5분 안에 파악합니다.</p>
+            </div>
+            <div className="border border-linen bg-ivory p-8">
+              <p className="font-mono text-xs uppercase tracking-widest text-mist">Lockup</p>
+              <h3 className="mt-6 font-serif text-xl text-ink">락업 해제 캘린더</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-slate">의무보유확약 해제일을 사전에 파악합니다.</p>
+            </div>
+            <div className="border border-linen bg-ivory p-8">
+              <p className="font-mono text-xs uppercase tracking-widest text-mist">Valuation</p>
+              <h3 className="mt-6 font-serif text-xl text-ink">공모가 적정성 분석</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-slate">비교기업 지표 기반의 공모가 위치 분석.</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 푸터 */}
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-8 text-center text-sm text-slate-500">
-          © 2026 IPO 인사이트
+      <section id="newsletter" className="bg-midnight">
+        <div className="mx-auto max-w-[1280px] px-6 py-24">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-xs uppercase tracking-widest text-amber">Newsletter</p>
+            <h2 className="mt-6 font-serif text-4xl leading-tight text-ivory">매주 월요일, 한 주의 IPO를 정리해 보내드립니다.</h2>
+            <p className="mt-6 text-base leading-relaxed text-mist">상장 예정 종목, 청약 일정, 시장 동향. 한 통의 메일로.</p>
+            <form className="mt-12 flex flex-col gap-3 sm:flex-row">
+              <input type="email" placeholder="이메일 주소" className="flex-1 border border-ink-slate bg-transparent px-5 py-4 text-ivory placeholder:text-mist focus:border-amber focus:outline-none" />
+              <button type="submit" className="border border-amber bg-amber px-8 py-4 text-sm font-medium tracking-wide text-midnight transition hover:bg-transparent hover:text-amber">구독 신청</button>
+            </form>
+            <p className="mt-4 text-xs text-mist">스팸 없음 · 언제든 구독 취소 가능</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-linen">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <p className="text-center text-xs leading-relaxed text-mist">본 서비스는 정보 제공을 목적으로 하며, 투자 자문이나 권유가 아닙니다. 모든 투자 결정과 그에 따른 결과는 투자자 본인의 책임입니다. 과거 데이터가 미래의 수익을 보장하지 않습니다.</p>
+        </div>
+      </section>
+
+      <footer className="border-t border-linen">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
+          <p className="font-serif text-sm text-ink">IPO 인사이트</p>
+          <p className="font-mono text-xs text-mist">© 2026 · Korean IPO Almanac</p>
         </div>
       </footer>
     </main>
