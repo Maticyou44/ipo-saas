@@ -1,50 +1,42 @@
-@import "tailwindcss";
-
-/* 폰트: 본문(Pretendard) + 헤드라인(Noto Serif KR) + 숫자(JetBrains Mono) */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+/* 폰트 import는 반드시 다른 @import보다 먼저 */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
 
-/* Quiet Authority 디자인 토큰 */
+@import "tailwindcss";
+
 @theme {
-  /* Foundation — 배경/구조 */
   --color-ivory: #FAF7F2;
   --color-sand: #EFE9DE;
   --color-linen: #E5DED1;
 
-  /* Ink — 타이포그래피 */
   --color-ink: #1A1F2E;
   --color-slate: #4A5468;
   --color-mist: #8B92A3;
 
-  /* Brand — 정체성 */
   --color-midnight: #0F2A47;
   --color-amber: #B8893C;
 
-  /* Signal — 의미 표현 */
   --color-sage: #5A7A6E;
   --color-clay: #B85742;
 
-  /* 타입 시스템 */
-  --font-serif: "Noto Serif KR", Georgia, serif;
+  --font-serif: "Pretendard Variable", system-ui, sans-serif;
   --font-sans: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", monospace;
 }
 
-/* 본문 기본값 — Ivory 배경, Deep Ink 텍스트, Pretendard */
 body {
   background-color: var(--color-ivory);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
-/* 모노스페이스 폰트에는 항상 tabular-nums 적용 (숫자 정렬용) */
 .font-mono {
   font-variant-numeric: tabular-nums;
 }
 
-/* 한국어 줄바꿈 자연스럽게 */
 :lang(ko) {
   word-break: keep-all;
   line-break: strict;
