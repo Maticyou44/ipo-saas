@@ -23,7 +23,7 @@ export default function CalculatorPage() {
     <div className="min-h-screen bg-ivory text-ink">
       <header className="border-b border-ink">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-4 py-3 md:px-6">
-          <a href="/" className="text-base font-medium text-ink">IPO 인사이트</a>
+          <a href="/" className="font-display text-xl tracking-tight md:text-2xl"><span className="text-ink">공모주</span><span className="text-amber">세요</span></a>
           <a href="/" className="font-mono text-xs text-slate transition hover:text-ink">← 홈으로</a>
         </div>
       </header>

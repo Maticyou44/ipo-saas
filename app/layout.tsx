@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "IPO 인사이트 — 한국 공모주, 조용히 깊이",
+  title: "공모주세요 — 한국 IPO 일정 · AI 분석",
   description:
     "IPO 일정, 균등배정 전략, 증권신고서 요약 — 개인투자자를 위한 정직한 정보.",
 };

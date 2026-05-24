@@ -35,8 +35,8 @@ export default function Home() {
         <div className="mx-auto max-w-[1280px] px-4 md:px-6">
           <div className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between md:gap-4">
             <div className="flex items-baseline gap-3">
-              <a href="/" className="text-base font-medium text-ink">IPO 인사이트</a>
-              <span className="hidden text-xs text-mist sm:block">한국 공모주 일정 · AI 분석</span>
+              <a href="/" className="font-display text-xl tracking-tight md:text-2xl"><span className="text-ink">공모주</span><span className="text-amber">세요</span></a>
+              <span className="hidden text-xs text-mist sm:block">한국 IPO 일정 · AI 분석</span>
             </div>
             <nav className="flex gap-4 overflow-x-auto text-sm text-slate sm:gap-5">
               <a href="#subscription" className="shrink-0 hover:text-ink">청약</a>
@@ -362,7 +362,7 @@ export default function Home() {
       <footer className="border-t border-ink">
         <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
           <p className="text-xs leading-relaxed text-mist">본 서비스는 정보 제공을 목적으로 하며, 자본시장법상 투자자문이나 투자권유에 해당하지 않습니다. 모든 투자 결정과 결과의 책임은 투자자 본인에게 있습니다.</p>
-          <p className="mt-3 font-mono text-xs text-mist">© 2026 IPO 인사이트</p>
+          <p className="mt-3 font-mono text-xs text-mist">© 2026 IPO 공모주세요</p>
         </div>
       </footer>
     </div>
