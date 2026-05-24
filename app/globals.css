@@ -1,4 +1,3 @@
-/* 폰트 import는 반드시 다른 @import보다 먼저 */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
 
@@ -16,8 +15,10 @@
   --color-midnight: #0F2A47;
   --color-amber: #B8893C;
 
-  --color-sage: #5A7A6E;
-  --color-clay: #B85742;
+  --color-sage: #15803d;
+  --color-sage-bg: #dcfce7;
+  --color-clay: #dc2626;
+  --color-clay-bg: #fee2e2;
 
   --font-serif: "Pretendard Variable", system-ui, sans-serif;
   --font-sans: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
