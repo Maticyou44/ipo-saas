@@ -1,15 +1,15 @@
 type Tone = "sage" | "clay" | "neutral";
 
 const subscriptions = [
-  { name: "회사명 A", sector: "코스닥 · 반도체", date: "05.27 - 05.28", dday: "D-3", ddayUrgent: true, priceRange: "28,000 ~ 32,000", finalPrice: "32,000", competition: "1,420 : 1", underwriter: "한국투자증권", aiText: "공모가 5% 할인 · 락업 58%", aiTone: "sage" as Tone },
-  { name: "회사명 B", sector: "코스피 · 바이오", date: "05.30 - 05.31", dday: "D-7", ddayUrgent: true, priceRange: "42,000 ~ 48,000", finalPrice: "48,000", competition: "980 : 1", underwriter: "미래에셋증권", aiText: "임상 3상 변동성 · 고평가", aiTone: "clay" as Tone },
-  { name: "회사명 C", sector: "코스닥 · 소비재", date: "06.05 - 06.06", dday: "D-12", ddayUrgent: false, priceRange: "18,000 ~ 21,000", finalPrice: "미정", competition: "미정", underwriter: "NH투자증권", aiText: "수요예측 진행 중", aiTone: "neutral" as Tone },
+  { name: "회사명 A", sector: "코스닥 · 반도체", date: "05.27 - 05.28", dday: "D-3", ddayUrgent: true, priceRange: "28,000 ~ 32,000", finalPrice: "32,000", competition: "1,420 : 1", underwriter: "한국투자증권", aiText: "공모가 5% 할인 · 락업 58%", aiTone: "sage" as Tone, aiDetail: "비교기업(N=4) 평균 PER 18.4 대비 본 종목 17.5로 약 5% 할인 영역. 의무보유 확약 58%로 업종 평균 42% 대비 높음 — 상장일 매물 부담 적을 가능성." },
+  { name: "회사명 B", sector: "코스피 · 바이오", date: "05.30 - 05.31", dday: "D-7", ddayUrgent: true, priceRange: "42,000 ~ 48,000", finalPrice: "48,000", competition: "980 : 1", underwriter: "미래에셋증권", aiText: "임상 3상 변동성 · 고평가", aiTone: "clay" as Tone, aiDetail: "비교기업 평균 PER 22 대비 본 종목 35로 약 60% 프리미엄. 핵심 파이프라인 임상 3상 결과 26년 4분기 발표 예정 — 상장 직후 변동성 클 가능성." },
+  { name: "회사명 C", sector: "코스닥 · 소비재", date: "06.05 - 06.06", dday: "D-12", ddayUrgent: false, priceRange: "18,000 ~ 21,000", finalPrice: "미정", competition: "미정", underwriter: "NH투자증권", aiText: "수요예측 진행 중", aiTone: "neutral" as Tone, aiDetail: "06.02-06.03 기관 수요예측 진행 중. 결과에 따라 공모가 확정 (밴드 18,000~21,000원). 수요예측 결과 발표 후 분석 업데이트 예정." },
 ];
 
 const listings = [
-  { name: "상장예정 X", date: "2026.05.28", dday: "D-4", ddayUrgent: true, finalPrice: "26,000", competition: "1,892 : 1", lockup: "42.3 %", market: "코스닥", aiText: "수요예측 흥행", aiTone: "sage" as Tone },
-  { name: "상장예정 Y", date: "2026.06.04", dday: "D-11", ddayUrgent: false, finalPrice: "15,500", competition: "2,345 : 1", lockup: "58.1 %", market: "코스닥", aiText: "락업 58% · 매물 적음", aiTone: "sage" as Tone },
-  { name: "상장예정 Z", date: "2026.06.18", dday: "D-25", ddayUrgent: false, finalPrice: "38,000", competition: "756 : 1", lockup: "31.7 %", market: "코스피", aiText: "락업 낮음 · 매물 우려", aiTone: "clay" as Tone },
+  { name: "상장예정 X", date: "2026.05.28", dday: "D-4", ddayUrgent: true, finalPrice: "26,000", competition: "1,892 : 1", lockup: "42.3 %", market: "코스닥", aiText: "수요예측 흥행", aiTone: "sage" as Tone, aiDetail: "기관 수요예측 경쟁률 1,892:1로 동기간 평균(540:1) 대비 약 3.5배. 가격 밴드 상단 초과 110% 확정 — 기관 수요 강한 흥행 신호." },
+  { name: "상장예정 Y", date: "2026.06.04", dday: "D-11", ddayUrgent: false, finalPrice: "15,500", competition: "2,345 : 1", lockup: "58.1 %", market: "코스닥", aiText: "락업 58% · 매물 적음", aiTone: "sage" as Tone, aiDetail: "의무보유 확약 58.1%, 업종 평균 42% 대비 +16%p. 6개월 락업 비중 높음 — 상장일 매도 가능 물량 제한적." },
+  { name: "상장예정 Z", date: "2026.06.18", dday: "D-25", ddayUrgent: false, finalPrice: "38,000", competition: "756 : 1", lockup: "31.7 %", market: "코스피", aiText: "락업 낮음 · 매물 우려", aiTone: "clay" as Tone, aiDetail: "의무보유 확약 31.7%로 업종 평균(42%) 대비 -10%p. 1개월 락업 비중 65% — 상장 1개월 후 매물 부담 우려." },
 ];
 
 const lockups = [
@@ -84,13 +84,14 @@ export default function Home() {
                 <div className="mt-4 border-t border-linen pt-4">
                   <p className="text-xs text-mist">AI 한 줄 평가</p>
                   <span className={"mt-2 inline-block px-2 py-1 text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
+                  <p className="mt-3 text-xs leading-relaxed text-slate">{item.aiDetail}</p>
                 </div>
               </article>
             ))}
           </div>
 
           {/* 데스크탑 테이블 */}
-          <div className="mt-6 hidden overflow-x-auto md:block">
+          <div className="mt-6 hidden md:block">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-linen text-xs uppercase tracking-wider text-mist">
@@ -118,7 +119,12 @@ export default function Home() {
                     <td className={"py-4 text-right " + (item.finalPrice === "미정" ? "text-mist" : "text-ink")}>{item.finalPrice}</td>
                     <td className={"py-4 text-right " + (item.competition === "미정" ? "text-mist" : "text-ink")}>{item.competition}</td>
                     <td className="py-4 font-sans text-slate">{item.underwriter}</td>
-                    <td className="py-4"><span className={"inline-block px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span></td>
+                    <td className="py-4">
+                      <span className="group relative inline-block">
+                        <span className={"inline-block cursor-help px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
+                        <span className="invisible absolute bottom-full right-0 z-20 mb-2 w-72 border border-ink bg-ivory p-3 font-sans text-xs leading-relaxed text-slate opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">{item.aiDetail}</span>
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -160,13 +166,14 @@ export default function Home() {
                 <div className="mt-4 border-t border-linen pt-4">
                   <p className="text-xs text-mist">AI 한 줄 평가</p>
                   <span className={"mt-2 inline-block px-2 py-1 text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
+                  <p className="mt-3 text-xs leading-relaxed text-slate">{item.aiDetail}</p>
                 </div>
               </article>
             ))}
           </div>
 
           {/* 데스크탑 테이블 */}
-          <div className="mt-6 hidden overflow-x-auto md:block">
+          <div className="mt-6 hidden md:block">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-linen text-xs uppercase tracking-wider text-mist">
@@ -191,7 +198,12 @@ export default function Home() {
                     <td className="py-4 text-right text-ink">{item.competition}</td>
                     <td className="py-4 text-right text-ink">{item.lockup}</td>
                     <td className="py-4 font-sans text-slate">{item.market}</td>
-                    <td className="py-4"><span className={"inline-block px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span></td>
+                    <td className="py-4">
+                      <span className="group relative inline-block">
+                        <span className={"inline-block cursor-help px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
+                        <span className="invisible absolute bottom-full right-0 z-20 mb-2 w-72 border border-ink bg-ivory p-3 font-sans text-xs leading-relaxed text-slate opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">{item.aiDetail}</span>
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -236,7 +248,7 @@ export default function Home() {
           </div>
 
           {/* 데스크탑 테이블 */}
-          <div className="mt-6 hidden overflow-x-auto md:block">
+          <div className="mt-6 hidden md:block">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-linen text-xs uppercase tracking-wider text-mist">
