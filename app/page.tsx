@@ -1,10 +1,4 @@
-type Tone = "sage" | "clay" | "neutral";
-
-const subscriptions = [
-  { name: "회사명 A", sector: "코스닥 · 반도체", date: "05.27 - 05.28", dday: "D-3", ddayUrgent: true, priceRange: "28,000 ~ 32,000", finalPrice: "32,000", competition: "1,420 : 1", underwriter: "한국투자증권", aiText: "공모가 5% 할인 · 락업 58%", aiTone: "sage" as Tone, aiDetail: "비교기업(N=4) 평균 PER 18.4 대비 본 종목 17.5로 약 5% 할인 영역. 의무보유 확약 58%로 업종 평균 42% 대비 높음 — 상장일 매물 부담 적을 가능성." },
-  { name: "회사명 B", sector: "코스피 · 바이오", date: "05.30 - 05.31", dday: "D-7", ddayUrgent: true, priceRange: "42,000 ~ 48,000", finalPrice: "48,000", competition: "980 : 1", underwriter: "미래에셋증권", aiText: "임상 3상 변동성 · 고평가", aiTone: "clay" as Tone, aiDetail: "비교기업 평균 PER 22 대비 본 종목 35로 약 60% 프리미엄. 핵심 파이프라인 임상 3상 결과 26년 4분기 발표 예정 — 상장 직후 변동성 클 가능성." },
-  { name: "회사명 C", sector: "코스닥 · 소비재", date: "06.05 - 06.06", dday: "D-12", ddayUrgent: false, priceRange: "18,000 ~ 21,000", finalPrice: "미정", competition: "미정", underwriter: "NH투자증권", aiText: "수요예측 진행 중", aiTone: "neutral" as Tone, aiDetail: "06.02-06.03 기관 수요예측 진행 중. 결과에 따라 공모가 확정 (밴드 18,000~21,000원). 수요예측 결과 발표 후 분석 업데이트 예정." },
-];
+import { getIPOList, type Tone } from "@/lib/ipo";
 
 const listings = [
   { name: "상장예정 X", date: "2026.05.28", dday: "D-4", ddayUrgent: true, finalPrice: "26,000", competition: "1,892 : 1", lockup: "42.3 %", market: "코스닥", aiText: "수요예측 흥행", aiTone: "sage" as Tone, aiDetail: "기관 수요예측 경쟁률 1,892:1로 동기간 평균(540:1) 대비 약 3.5배. 가격 밴드 상단 초과 110% 확정 — 기관 수요 강한 흥행 신호." },
@@ -28,7 +22,19 @@ function ddayClass(urgent: boolean) {
   return urgent ? "bg-clay-bg text-clay" : "bg-linen text-slate";
 }
 
-export default function Home() {
+function disp(value: string): string {
+  return value === "정보 없음" ? "—" : value;
+}
+
+function todayStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
+
+export default async function Home() {
+  const result = await getIPOList();
+  const subscriptions = result.success ? result.subscriptions : [];
+
   return (
     <div className="min-h-screen bg-ivory text-ink">
       <header className="border-b border-ink">
@@ -36,7 +42,7 @@ export default function Home() {
           <div className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between md:gap-4">
             <div className="flex items-baseline gap-3">
               <a href="/" className="font-display text-xl tracking-tight md:text-2xl"><span className="text-ink">공모주</span><span className="text-amber">세요</span></a>
-              <span className="hidden text-xs text-mist sm:block">한국 IPO 일정 · AI 분석</span>
+              <span className="hidden text-xs text-mist sm:block">한국 공모주 일정 · AI 분석</span>
             </div>
             <nav className="flex gap-4 overflow-x-auto text-sm text-slate sm:gap-5">
               <a href="#subscription" className="shrink-0 hover:text-ink">청약</a>
@@ -49,99 +55,107 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 청약 일정 */}
+      {/* 청약 일정 — 실데이터 */}
       <section id="subscription">
         <div className="mx-auto max-w-[1280px] px-4 py-10 md:px-6 md:py-12">
           <div className="flex items-baseline justify-between border-b-2 border-ink pb-3">
             <div>
               <h2 className="text-xl font-medium text-ink md:text-2xl">청약 일정</h2>
-              <p className="mt-1 text-xs text-slate md:text-sm">진행 중이거나 임박한 공모주 청약</p>
+              <p className="mt-1 text-xs text-slate md:text-sm">진행 중이거나 임박한 공모주 청약 · DART 실시간 연동</p>
             </div>
             <div className="text-right">
-              <p className="font-mono text-xs text-mist">2026.05.24 기준</p>
-              <p className="font-mono text-xs text-slate">3건</p>
+              <p className="font-mono text-xs text-mist">{todayStr()} 기준</p>
+              <p className="font-mono text-xs text-slate">{subscriptions.length}건</p>
             </div>
           </div>
 
-          {/* 모바일 카드 */}
-          <div className="mt-6 grid gap-3 md:hidden">
-            {subscriptions.map((item) => (
-              <article key={item.name} className="border border-linen bg-ivory p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="text-base font-medium text-ink">{item.name}</h3>
-                    <p className="mt-1 text-xs text-mist">{item.sector}</p>
-                  </div>
-                  <span className={"shrink-0 px-2 py-0.5 font-mono text-xs font-medium " + ddayClass(item.ddayUrgent)}>{item.dday}</span>
-                </div>
-                <div className="mt-4 space-y-2 border-t border-linen pt-4 text-sm">
-                  <div className="flex items-baseline justify-between gap-3"><span className="text-mist">청약일</span><span className="font-mono text-ink">{item.date}</span></div>
-                  <div className="flex items-baseline justify-between gap-3"><span className="text-mist">희망 공모가</span><span className="font-mono text-slate">{item.priceRange}</span></div>
-                  <div className="flex items-baseline justify-between gap-3"><span className="text-mist">확정 공모가</span><span className={item.finalPrice === "미정" ? "font-mono text-mist" : "font-mono text-ink"}>{item.finalPrice}</span></div>
-                  <div className="flex items-baseline justify-between gap-3"><span className="text-mist">경쟁률</span><span className={item.competition === "미정" ? "font-mono text-mist" : "font-mono text-ink"}>{item.competition}</span></div>
-                  <div className="flex items-baseline justify-between gap-3"><span className="text-mist">주관사</span><span className="text-slate">{item.underwriter}</span></div>
-                </div>
-                <div className="mt-4 border-t border-linen pt-4">
-                  <p className="text-xs text-mist">AI 한 줄 평가</p>
-                  <span className={"mt-2 inline-block px-2 py-1 text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
-                  <p className="mt-3 text-xs leading-relaxed text-slate">{item.aiDetail}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* 데스크탑 테이블 */}
-          <div className="mt-6 hidden md:block">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-linen text-xs uppercase tracking-wider text-mist">
-                  <th className="py-3 text-left font-normal">기업명</th>
-                  <th className="py-3 text-left font-normal">청약일</th>
-                  <th className="py-3 text-right font-normal">희망 공모가</th>
-                  <th className="py-3 text-right font-normal">확정 공모가</th>
-                  <th className="py-3 text-right font-normal">경쟁률</th>
-                  <th className="py-3 text-left font-normal">주관사</th>
-                  <th className="py-3 text-left font-normal">AI 한 줄 평가</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono text-sm">
-                {subscriptions.map((item, idx) => (
-                  <tr key={item.name} className={(idx < subscriptions.length - 1 ? "border-b border-linen " : "") + "hover:bg-sand/60"}>
-                    <td className="py-4">
-                      <div className="font-sans font-medium text-ink">{item.name}</div>
-                      <div className="font-sans text-xs text-mist">{item.sector}</div>
-                    </td>
-                    <td className="py-4">
-                      <div className="text-ink">{item.date}</div>
-                      <div className={"mt-1 inline-block px-1.5 py-0.5 text-xs font-medium " + ddayClass(item.ddayUrgent)}>{item.dday}</div>
-                    </td>
-                    <td className="py-4 text-right text-slate">{item.priceRange}</td>
-                    <td className={"py-4 text-right " + (item.finalPrice === "미정" ? "text-mist" : "text-ink")}>{item.finalPrice}</td>
-                    <td className={"py-4 text-right " + (item.competition === "미정" ? "text-mist" : "text-ink")}>{item.competition}</td>
-                    <td className="py-4 font-sans text-slate">{item.underwriter}</td>
-                    <td className="py-4">
-                      <span className="group relative inline-block">
-                        <span className={"inline-block cursor-help px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
-                        <span className="invisible absolute bottom-full right-0 z-20 mb-2 w-72 border border-ink bg-ivory p-3 font-sans text-xs leading-relaxed text-slate opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">{item.aiDetail}</span>
-                      </span>
-                    </td>
-                  </tr>
+          {subscriptions.length === 0 ? (
+            <div className="mt-6 border border-linen bg-sand/40 p-6 text-center text-sm text-slate">
+              {result.success ? "현재 진행 중인 공모주 청약 데이터가 없습니다." : `데이터 불러오기 실패. ${result.message}`}
+            </div>
+          ) : (
+            <>
+              {/* 모바일 카드 */}
+              <div className="mt-6 grid gap-3 md:hidden">
+                {subscriptions.map((item) => (
+                  <article key={item.name} className="border border-linen bg-ivory p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="text-base font-medium text-ink">{item.name}</h3>
+                        {item.sector !== "정보 없음" && <p className="mt-1 text-xs text-mist">{item.sector}</p>}
+                      </div>
+                      <span className={"shrink-0 px-2 py-0.5 font-mono text-xs font-medium " + ddayClass(item.ddayUrgent)}>{item.dday}</span>
+                    </div>
+                    <div className="mt-4 space-y-2 border-t border-linen pt-4 text-sm">
+                      <div className="flex items-baseline justify-between gap-3"><span className="text-mist">청약일</span><span className="font-mono text-ink">{item.date}</span></div>
+                      <div className="flex items-baseline justify-between gap-3"><span className="text-mist">희망 공모가</span><span className={item.priceRange === "정보 없음" ? "font-mono text-mist" : "font-mono text-slate"}>{disp(item.priceRange)}</span></div>
+                      <div className="flex items-baseline justify-between gap-3"><span className="text-mist">확정 공모가</span><span className={item.finalPrice === "정보 없음" ? "font-mono text-mist" : "font-mono text-ink"}>{disp(item.finalPrice)}</span></div>
+                      <div className="flex items-baseline justify-between gap-3"><span className="text-mist">경쟁률</span><span className={item.competition === "정보 없음" ? "font-mono text-mist" : "font-mono text-ink"}>{disp(item.competition)}</span></div>
+                      <div className="flex items-baseline justify-between gap-3"><span className="text-mist">주관사</span><span className="text-slate">{item.underwriter}</span></div>
+                    </div>
+                    <div className="mt-4 border-t border-linen pt-4">
+                      <p className="text-xs text-mist">AI 한 줄 평가</p>
+                      <span className={"mt-2 inline-block px-2 py-1 text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
+                      <p className="mt-3 text-xs leading-relaxed text-slate">{item.aiDetail}</p>
+                    </div>
+                  </article>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
 
-          <p className="mt-4 font-mono text-xs text-mist">데모 데이터. 실데이터는 DART · KIND 연동 후 제공</p>
+              {/* 데스크탑 테이블 */}
+              <div className="mt-6 hidden md:block">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-linen text-xs uppercase tracking-wider text-mist">
+                      <th className="py-3 text-left font-normal">기업명</th>
+                      <th className="py-3 text-left font-normal">청약일</th>
+                      <th className="py-3 text-right font-normal">희망 공모가</th>
+                      <th className="py-3 text-right font-normal">확정 공모가</th>
+                      <th className="py-3 text-right font-normal">경쟁률</th>
+                      <th className="py-3 text-left font-normal">주관사</th>
+                      <th className="py-3 text-left font-normal">AI 한 줄 평가</th>
+                    </tr>
+                  </thead>
+                  <tbody className="font-mono text-sm">
+                    {subscriptions.map((item, idx) => (
+                      <tr key={item.name} className={(idx < subscriptions.length - 1 ? "border-b border-linen " : "") + "hover:bg-sand/60"}>
+                        <td className="py-4">
+                          <div className="font-sans font-medium text-ink">{item.name}</div>
+                          {item.sector !== "정보 없음" && <div className="font-sans text-xs text-mist">{item.sector}</div>}
+                        </td>
+                        <td className="py-4">
+                          <div className="text-ink">{item.date}</div>
+                          <div className={"mt-1 inline-block px-1.5 py-0.5 text-xs font-medium " + ddayClass(item.ddayUrgent)}>{item.dday}</div>
+                        </td>
+                        <td className={"py-4 text-right " + (item.priceRange === "정보 없음" ? "text-mist" : "text-slate")}>{disp(item.priceRange)}</td>
+                        <td className={"py-4 text-right " + (item.finalPrice === "정보 없음" ? "text-mist" : "text-ink")}>{disp(item.finalPrice)}</td>
+                        <td className={"py-4 text-right " + (item.competition === "정보 없음" ? "text-mist" : "text-ink")}>{disp(item.competition)}</td>
+                        <td className="py-4 font-sans text-slate">{item.underwriter}</td>
+                        <td className="py-4">
+                          <span className="group relative inline-block">
+                            <span className={"inline-block cursor-help px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
+                            <span className="invisible absolute bottom-full right-0 z-20 mb-2 w-72 border border-ink bg-ivory p-3 font-sans text-xs leading-relaxed text-slate opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">{item.aiDetail}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          <p className="mt-4 font-mono text-xs text-mist">DART 전자공시 실시간 연동 · 1시간 간격 갱신</p>
         </div>
       </section>
 
-      {/* 상장 예정 */}
+      {/* 상장 예정 (더미 유지 — 향후 보완) */}
       <section id="listing" className="border-t border-ink bg-sand/30">
         <div className="mx-auto max-w-[1280px] px-4 py-10 md:px-6 md:py-12">
           <div className="flex items-baseline justify-between border-b-2 border-ink pb-3">
             <div>
               <h2 className="text-xl font-medium text-ink md:text-2xl">상장 예정</h2>
-              <p className="mt-1 text-xs text-slate md:text-sm">청약을 마치고 상장을 기다리는 종목</p>
+              <p className="mt-1 text-xs text-slate md:text-sm">청약을 마치고 상장을 기다리는 종목 (데모 데이터)</p>
             </div>
             <p className="font-mono text-xs text-slate">3건</p>
           </div>
@@ -212,13 +226,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 락업 해제 */}
+      {/* 락업 해제 (더미 유지) */}
       <section id="lockup" className="border-t border-ink">
         <div className="mx-auto max-w-[1280px] px-4 py-10 md:px-6 md:py-12">
           <div className="flex items-baseline justify-between border-b-2 border-ink pb-3">
             <div>
               <h2 className="text-xl font-medium text-ink md:text-2xl">락업 해제 일정</h2>
-              <p className="mt-1 text-xs text-slate md:text-sm">의무보유확약 해제일 · 잠재 매물 신호</p>
+              <p className="mt-1 text-xs text-slate md:text-sm">의무보유확약 해제일 · 잠재 매물 신호 (데모 데이터)</p>
             </div>
             <p className="font-mono text-xs text-slate">3건</p>
           </div>
@@ -280,13 +294,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* AI 분석 미리보기 */}
+      {/* AI 분석 미리보기 (더미 유지) */}
       <section id="analysis" className="border-t border-ink bg-sand/30">
         <div className="mx-auto max-w-[1280px] px-4 py-10 md:px-6 md:py-12">
           <div className="flex items-baseline justify-between border-b-2 border-ink pb-3">
             <div>
               <h2 className="text-xl font-medium text-ink md:text-2xl">AI 분석 미리보기</h2>
-              <p className="mt-1 text-xs text-slate md:text-sm">증권신고서 자동 요약 · 회사명 A 기준</p>
+              <p className="mt-1 text-xs text-slate md:text-sm">증권신고서 자동 요약 · 데모 (실데이터 향후 적용)</p>
             </div>
             <p className="font-mono text-xs text-amber">Pro · 월 9,900원</p>
           </div>
@@ -362,7 +376,7 @@ export default function Home() {
       <footer className="border-t border-ink">
         <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6">
           <p className="text-xs leading-relaxed text-mist">본 서비스는 정보 제공을 목적으로 하며, 자본시장법상 투자자문이나 투자권유에 해당하지 않습니다. 모든 투자 결정과 결과의 책임은 투자자 본인에게 있습니다.</p>
-          <p className="mt-3 font-mono text-xs text-mist">© 2026 IPO 공모주세요</p>
+          <p className="mt-3 font-mono text-xs text-mist">© 2026 공모주세요</p>
         </div>
       </footer>
     </div>
