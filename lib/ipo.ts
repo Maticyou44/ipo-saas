@@ -1,3 +1,9 @@
+import JSZip from "jszip";
+import { analyzeIPOFiling, type IPOAnalysis, type Tone } from "@/lib/llm";
+import { getCachedAnalysis, setCachedAnalysis } from "@/lib/db";
+
+export type { Tone };
+
 // === 타입 ===
 
 interface DartListItem {
@@ -27,8 +33,6 @@ interface DartDetailResponse {
   group?: DartGroup[];
 }
 
-export type Tone = "sage" | "clay" | "neutral";
-
 export interface SubscriptionItem {
   name: string;
   corp_code: string;
@@ -52,7 +56,9 @@ export interface IPOListResult {
   subscriptions: SubscriptionItem[];
 }
 
-// === 헬퍼 ===
+// === LLM 분석 캐시는 lib/db.ts(Supabase)로 이동 ===
+
+// === 기존 헬퍼들 ===
 
 function stagePriority(reportName: string): number {
   if (reportName.includes("[기재정정]투자설명서")) return 5;
@@ -142,7 +148,6 @@ function extractUnderwriters(list: Record<string, string>[]): string {
   return reps.join(", ");
 }
 
-// 임시 AI 평가 — 향후 LLM 분석으로 교체 예정
 function generateTemporaryAI(date: string, ddayNum: number, finalPrice: string, underwriter: string): { aiText: string; aiTone: Tone; aiDetail: string } {
   if (ddayNum >= 0 && ddayNum <= 3) {
     return {
@@ -155,13 +160,13 @@ function generateTemporaryAI(date: string, ddayNum: number, finalPrice: string, 
     return {
       aiText: "청약 2주 이내",
       aiTone: "sage",
-      aiDetail: `청약 ${date} (D-${ddayNum}). 공모가 ${finalPrice}원. 수요예측 결과와 락업 비율 확인 권장. (AI 상세 분석 향후 추가 예정)`,
+      aiDetail: `청약 ${date} (D-${ddayNum}). 공모가 ${finalPrice}원. 수요예측 결과와 락업 비율 확인 권장.`,
     };
   }
   return {
     aiText: "수요예측 단계",
     aiTone: "neutral",
-    aiDetail: `청약 ${date}. 공모가 ${finalPrice}원. 수요예측 진행 중 또는 임박. AI 상세 분석 향후 추가 예정.`,
+    aiDetail: `청약 ${date}. 공모가 ${finalPrice}원. 수요예측 진행 중 또는 임박.`,
   };
 }
 
@@ -194,6 +199,116 @@ function mapToSubscriptionItem(corpName: string, corpCode: string, reportName: s
     stage: reportName,
     ...ai,
   };
+}
+
+// === LLM 분석 통합용 헬퍼들 ===
+
+function cleanXmlToText(xml: string): string {
+  return xml
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function getFilingText(rceptNo: string, apiKey: string): Promise<string | null> {
+  try {
+    const url = `https://opendart.fss.or.kr/api/document.xml?crtfc_key=${apiKey}&rcept_no=${rceptNo}`;
+    const response = await fetch(url, { next: { revalidate: 86400 } });
+    if (!response.ok) {
+      console.warn(`[getFilingText] HTTP 실패 (${rceptNo}): ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+
+    // ZIP 매직 바이트 확인 (PK = 0x50 0x4B). DART가 가끔 단일 XML로 직접 응답
+    const isZip = bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4B;
+
+    if (!isZip) {
+      const decoder = new TextDecoder("utf-8");
+      const text = cleanXmlToText(decoder.decode(bytes));
+      if (!text.trim()) {
+        console.warn(`[getFilingText] 비-ZIP 응답인데 텍스트 비어있음 (${rceptNo})`);
+        return null;
+      }
+      console.log(`[getFilingText] 비-ZIP 응답 직접 처리 성공 (${rceptNo}), 텍스트 길이=${text.length}`);
+      return text;
+    }
+
+    const zip = await JSZip.loadAsync(arrayBuffer);
+
+    let combined = "";
+    let fileCount = 0;
+    for (const filename of Object.keys(zip.files)) {
+      const file = zip.files[filename];
+      if (file.dir) continue;
+      const fileBytes = await file.async("uint8array");
+      const decoder = new TextDecoder("utf-8");
+      combined += cleanXmlToText(decoder.decode(fileBytes)) + "\n\n";
+      fileCount++;
+    }
+
+    if (!combined.trim()) {
+      console.warn(`[getFilingText] ZIP 텍스트 비어있음 (${rceptNo}), 파일 수=${fileCount}`);
+      return null;
+    }
+
+    return combined;
+  } catch (e) {
+    console.warn(`[getFilingText] 예외 (${rceptNo}):`, e instanceof Error ? e.message : String(e));
+    return null;
+  }
+}
+
+function combineSector(market: string, sector: string): string {
+  const marketOk = market && market !== "정보 없음" && market !== "기타";
+  const sectorOk = sector && sector !== "정보 없음";
+  if (marketOk && sectorOk) return `${market} · ${sector}`;
+  if (sectorOk) return sector;
+  if (marketOk) return market;
+  return "정보 없음";
+}
+
+function mergeAnalysis(item: SubscriptionItem, analysis: IPOAnalysis): SubscriptionItem {
+  let finalPrice = item.finalPrice;
+  if (!finalPrice || finalPrice === "정보 없음") {
+    if (analysis.final_price && analysis.final_price !== "미확정" && analysis.final_price !== "정보 없음") {
+      finalPrice = analysis.final_price;
+    }
+  }
+
+  return {
+    ...item,
+    sector: combineSector(analysis.market, analysis.sector),
+    priceRange: analysis.price_range || "정보 없음",
+    finalPrice,
+    competition: analysis.competition_ratio || "정보 없음",
+    aiText: analysis.ai_evaluation,
+    aiTone: analysis.ai_tone,
+    aiDetail: analysis.ai_detail,
+  };
+}
+
+async function enrichWithLLM(item: SubscriptionItem, rceptNo: string, apiKey: string): Promise<SubscriptionItem> {
+  const cached = await getCachedAnalysis(rceptNo);
+  if (cached) return mergeAnalysis(item, cached);
+
+  const text = await getFilingText(rceptNo, apiKey);
+  if (!text) {
+    console.warn(`[enrichWithLLM] 신고서 텍스트 못 가져옴 (${item.name}, rcept_no=${rceptNo})`);
+    return item;
+  }
+
+  try {
+    const analysis = await analyzeIPOFiling(item.name, text);
+    await setCachedAnalysis(rceptNo, item.name, analysis);
+    return mergeAnalysis(item, analysis);
+  } catch (e) {
+    console.error(`[enrichWithLLM] LLM 분석 실패 (${item.name}, rcept_no=${rceptNo}):`, e instanceof Error ? e.message : String(e));
+    return item;
+  }
 }
 
 // === 메인 export 함수 ===
@@ -229,24 +344,40 @@ export async function getIPOList(): Promise<IPOListResult> {
     const detailPromises = candidates.map((c) => getIPODetail(c.corp_code, apiKey));
     const details = await Promise.all(detailPromises);
 
-    const subscriptions: SubscriptionItem[] = [];
+    const initialItems: { item: SubscriptionItem; rceptNo: string }[] = [];
     for (let i = 0; i < candidates.length; i++) {
       const c = candidates[i];
       const d = details[i];
       if (!d) continue;
       const item = mapToSubscriptionItem(c.corp_name, c.corp_code, c.report_nm, d);
-      if (item) subscriptions.push(item);
+      if (item) initialItems.push({ item, rceptNo: c.rcept_no });
+    }
+
+    const subscriptions: SubscriptionItem[] = [];
+    for (let i = 0; i < initialItems.length; i++) {
+      const { item, rceptNo } = initialItems[i];
+      const enriched = await enrichWithLLM(item, rceptNo, apiKey);
+      subscriptions.push(enriched);
+      if (i < initialItems.length - 1) {
+        await new Promise((r) => setTimeout(r, 1000));
+      }
     }
 
     subscriptions.sort((a, b) => {
-      const aNum = a.dday.startsWith("D-") ? Number(a.dday.slice(2)) : -1;
-      const bNum = b.dday.startsWith("D-") ? Number(b.dday.slice(2)) : -1;
-      return aNum - bNum;
+      const score = (dday: string): number => {
+        if (dday === "D-day") return 0;
+        if (dday.startsWith("D-")) {
+          const n = Number(dday.slice(2));
+          return Number.isFinite(n) ? n : 9999;
+        }
+        return 9999;
+      };
+      return score(a.dday) - score(b.dday);
     });
 
     return {
       success: true,
-      message: `IPO 청약 일정 ${subscriptions.length}건`,
+      message: `IPO 청약 일정 ${subscriptions.length}건 (LLM 분석 포함)`,
       subscriptions,
     };
   } catch (error) {

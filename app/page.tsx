@@ -1,4 +1,7 @@
 import { getIPOList, type Tone } from "@/lib/ipo";
+import AIBadge from "@/components/AIBadge";
+
+export const maxDuration = 60;
 
 const listings = [
   { name: "상장예정 X", date: "2026.05.28", dday: "D-4", ddayUrgent: true, finalPrice: "26,000", competition: "1,892 : 1", lockup: "42.3 %", market: "코스닥", aiText: "수요예측 흥행", aiTone: "sage" as Tone, aiDetail: "기관 수요예측 경쟁률 1,892:1로 동기간 평균(540:1) 대비 약 3.5배. 가격 밴드 상단 초과 110% 확정 — 기관 수요 강한 흥행 신호." },
@@ -132,10 +135,7 @@ export default async function Home() {
                         <td className={"py-4 text-right " + (item.competition === "정보 없음" ? "text-mist" : "text-ink")}>{disp(item.competition)}</td>
                         <td className="py-4 font-sans text-slate">{item.underwriter}</td>
                         <td className="py-4">
-                          <span className="group relative inline-block">
-                            <span className={"inline-block cursor-help px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
-                            <span className="invisible absolute bottom-full right-0 z-20 mb-2 w-72 border border-ink bg-ivory p-3 font-sans text-xs leading-relaxed text-slate opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">{item.aiDetail}</span>
-                          </span>
+                          <AIBadge text={item.aiText} tone={item.aiTone} detail={item.aiDetail} />
                         </td>
                       </tr>
                     ))}
@@ -213,10 +213,7 @@ export default async function Home() {
                     <td className="py-4 text-right text-ink">{item.lockup}</td>
                     <td className="py-4 font-sans text-slate">{item.market}</td>
                     <td className="py-4">
-                      <span className="group relative inline-block">
-                        <span className={"inline-block cursor-help px-2 py-1 font-sans text-xs font-medium " + toneClass(item.aiTone)}>{item.aiText}</span>
-                        <span className="invisible absolute bottom-full right-0 z-20 mb-2 w-72 border border-ink bg-ivory p-3 font-sans text-xs leading-relaxed text-slate opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">{item.aiDetail}</span>
-                      </span>
+                      <AIBadge text={item.aiText} tone={item.aiTone} detail={item.aiDetail} />
                     </td>
                   </tr>
                 ))}
